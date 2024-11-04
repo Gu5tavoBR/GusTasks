@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "GusTask",
+    "slug": "GusTask",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icone.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "android": {
+      "package": "com.gustask.brstudio"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "52384470-b9d7-4518-9031-1044c95c26e8"
+      }
+    }
+  }
+}
