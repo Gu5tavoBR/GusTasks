@@ -1,4 +1,4 @@
-import { AccessibilityInfo, StyleSheet, View, Text, TouchableOpacity, FlatList, Pressable,  } from "react-native";
+import { AccessibilityInfo, StyleSheet, View, Text, TouchableOpacity, FlatList, Pressable, ActivityIndicator,  } from "react-native";
 import style from "../style";
 import AS from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
@@ -9,23 +9,33 @@ import EditarTarefa from "../src/componentes/EditarTarefa";
 export default function Tasks({ navigation }) {
   const [mostrarCriar, setMostrarCriar] = useState(false);
   const [mostrarEditar, setMostrarEditar] = useState(false);
-  const [titleSelecionado, setTitleSelecionado] = useState(null)
+  const [titleSelecionado, setTitleSelecionado] = useState("");
+  const [esperando, setEsperando] = useState(false)
 
   const abrirCriar = () => setMostrarCriar(true);
   const fecharCriar = () => setMostrarCriar(false);
   const criarTask = (task) => {
+    setEsperando(true)
 fetch(`https://api-todolist-rho.vercel.app/criartarefa?id=${id}&title=${task}`)
-navigation.navigate("Tabs")
-    fecharCriar();
+.then(() => {
+  navigation.navigate("Tabs")
+      fecharCriar();
+      setEsperando(false)
+}
+)
   };
 
   const abrirEditar = () => setMostrarEditar(true);
   const fecharEditar = () => setMostrarEditar(false);
   const editarTask = (title) => {
     setTitleSelecionado(title)
-fetch(`https://api-todolist-rho.vercel.app/editartarefa?id=${id}&title=${title}`)
-navigation.navigate("Tabs")
-    fecharEditar();
+    setEsperando(true)
+fetch(`https://api-todolist-rho.vercel.app/editartask?id=${id}&title=${title}`)
+.then(() => {
+  navigation.navigate("Tabs")
+  fecharEditar();
+  setEsperando(false)
+})
   };
 
   const [id, setId] = useState("");
@@ -48,15 +58,19 @@ navigation.navigate("Tabs")
   }, [id])
 
   const tarefas = () => {
+    setEsperando(false)
     fetch(`https://api-todolist-rho.vercel.app/?id=${id}`)
     .then(result => result.json())
-    .then(resposta => setResponse(resposta))
+    .then(resposta => {
+      setResponse(resposta);
+      setEsperando(false)
+    });
   }
 
-  tarefas()
 
   return (
     <View style={style.tela3}>
+      {esperando && <ActivityIndicator size="large" color="#fff" />}
       {response.length == 0 ? (
         <Text style={style.msg}>
           Ainda não encontramos nenhuma tarefa no momento! É provável que você não tenha criado nenhuma.
@@ -67,12 +81,13 @@ navigation.navigate("Tabs")
       style={{flexGrow: 0}}
         data={response}
         renderItem={({item}) => (
-          <Pressable style={style.containerTask} onPress={() => editarTask(item.title)}>
+          <Pressable style={style.containerTask} onLongPress={() => editarTask(item.title)}>
             <TouchableOpacity style={style.apagarTask} onPress={() => {
+              setEsperando(true)
               fetch(`https://api-todolist-rho.vercel.app/deletartask?id=${item.id}`)
               .then(() => {
-
                 navigation.navigate("Tabs")
+setEsperando(false)
               })
             }}>
             <MaterialIcons name="delete" size={15} color="rgb(0,122,204)" />
