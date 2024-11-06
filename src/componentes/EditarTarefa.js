@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TouchableWithoutFeedback, View, Modal, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function EditarTarefa({visible, onCancelar, onEditar, titulo}) {
   const [title, setTitle] = useState(titulo);
+
+  useEffect(() => {
+    setTitle(titulo);
+  }, [titulo]);
 
   const editarTask = () => {
     if (title.trim() === "") {
