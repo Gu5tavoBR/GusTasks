@@ -112,7 +112,8 @@ const style = StyleSheet.create({
         marginRight: 8,
         marginLeft: "auto",
     },
-    apagarTask: {
+    statusIcon: {
+        
     }
 });
 

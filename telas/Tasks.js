@@ -2,7 +2,7 @@ import { AccessibilityInfo, StyleSheet, View, Text, TouchableOpacity, FlatList, 
 import style from "../style";
 import AS from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import CriarTarefa from "../src/componentes/CriarTarefa";
 import EditarTarefa from "../src/componentes/EditarTarefa";
 
@@ -89,7 +89,7 @@ fetch(`https://api-todolist-rho.vercel.app/criartarefa?id=${id}&title=${task}`)
           <Pressable style={style.containerTask} onLongPress={() => {
             setIdTask(item.id)
             setTitleSelecionado(item.title)
-            abrirEditar(titleSelecionado);
+            abrirEditar();
           }}>
             <TouchableOpacity style={style.apagarTask} onPress={() => {
               setEsperando(true)
@@ -106,6 +106,31 @@ fetch(`https://api-todolist-rho.vercel.app/criartarefa?id=${id}&title=${task}`)
            <Text style={style.title}>
             {item.title}
           </Text>
+          <TouchableOpacity style={style.statusIcon} onPress={() => {
+if (item.status == "pendente") {
+setEsperando(true);
+  fetch(`https://api-todolist-rho.vercel.app/editarStatus?id${item.id}&status=concluido`)
+.then(() => {
+tarefas();
+setEsperando(false);
+navigation.navigate("Tabs");
+});
+} else{
+  setEsperando(true);
+  fetch(`https://api-todolist-rho.vercel.app/editarStatus?id${item.id}&status=pendente`)
+  .then(() => {
+    tarefas();
+    setEsperando(false);
+    navigation.navigate("Tabs");
+  })
+}
+          }}>
+            {item.status == "pendente" ? (
+              <MaterialCommunityIcons name="clock-outline" size={30} color="rgb(155,0,0)" />
+            ) : (
+              <MaterialCommunityIcons name="check-circle" size={30} color="rgb(0,155,0)" />
+            )}
+          </TouchableOpacity>
           <Text style={style.status}>
             {item.status}
           </Text> 
